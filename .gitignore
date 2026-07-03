@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+*.pem
+npm-debug.log*
+.env*
+next-env.d.ts
+
+# runtime JSON store (seeded from code on first run)
+data/*.json
