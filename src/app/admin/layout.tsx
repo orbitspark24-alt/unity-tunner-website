@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Logo from "@/components/Logo";
-import { isAuthed, login, logout } from "@/lib/adminClient";
+import { checkSession, login, logout } from "@/lib/adminClient";
 import { cx } from "@/lib/utils";
 
 type P = { className?: string };
@@ -33,7 +33,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [authed, setAuthed] = useState<boolean | null>(null);
 
-  useEffect(() => setAuthed(isAuthed()), []);
+  useEffect(() => { checkSession().then(setAuthed); }, []);
+
+  const doLogout = async () => { await logout(); setAuthed(false); };
 
   if (authed === null) return <div className="min-h-screen bg-[#0a0a0a]" />;
   if (!authed) return <LoginGate onDone={() => setAuthed(true)} />;
@@ -70,7 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="hidden gap-2 border-t border-white/10 p-3 lg:flex lg:flex-col">
           <Link href="/" className="rounded-lg px-3.5 py-2.5 text-sm text-white/55 hover:bg-white/5 hover:text-white">↗ View storefront</Link>
           <button
-            onClick={() => { logout(); setAuthed(false); }}
+            onClick={doLogout}
             className="rounded-lg px-3.5 py-2.5 text-left text-sm text-white/55 hover:bg-white/5 hover:text-[#ff2a1f]"
           >
             ⏻ Log out
@@ -82,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="min-w-0">
         <div className="flex items-center justify-between gap-3 border-b border-white/10 px-5 py-3 lg:hidden">
           <span className="text-xs text-white/45">Signed in as Admin</span>
-          <button onClick={() => { logout(); setAuthed(false); }} className="text-xs font-semibold text-[#ff2a1f]">Log out</button>
+          <button onClick={doLogout} className="text-xs font-semibold text-[#ff2a1f]">Log out</button>
         </div>
         <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
       </div>
@@ -93,6 +95,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 function LoginGate({ onDone }: { onDone: () => void }) {
   const [pw, setPw] = useState("");
   const [err, setErr] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] px-4">
@@ -106,9 +109,12 @@ function LoginGate({ onDone }: { onDone: () => void }) {
         <h1 className="display mt-4 text-2xl">Pit Wall Access</h1>
         <p className="mt-1 text-sm text-white/50">Enter the admin password to continue.</p>
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            if (login(pw)) onDone();
+            setBusy(true);
+            const ok = await login(pw);
+            setBusy(false);
+            if (ok) onDone();
             else setErr(true);
           }}
           className="mt-6 space-y-3"
@@ -123,10 +129,11 @@ function LoginGate({ onDone }: { onDone: () => void }) {
             aria-label="Admin password"
           />
           {err && <p className="text-sm text-[#ff2a1f]">Wrong password. Try again.</p>}
-          <button type="submit" className="btn btn-primary w-full rounded-md px-6 py-3 text-sm">Unlock</button>
+          <button type="submit" disabled={busy} className="btn btn-primary w-full rounded-md px-6 py-3 text-sm disabled:opacity-60">{busy ? "Checking…" : "Unlock"}</button>
         </form>
         <p className="mt-5 rounded-md bg-white/5 px-3 py-2 text-xs text-white/40">
-          Demo password: <span className="font-mono font-semibold text-white/70">unity2026</span>
+          Default password: <span className="font-mono font-semibold text-white/70">unity2026</span>
+          <br />Set <span className="font-mono">ADMIN_PASSWORD</span> to change it.
         </p>
       </motion.div>
     </div>
