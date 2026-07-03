@@ -96,7 +96,7 @@ A [`render.yaml`](render.yaml) Blueprint is included, so this is two clicks:
 1. Push to GitHub (already done → `orbitspark24-alt/unity-tunner-website`).
 2. In the [Render dashboard](https://dashboard.render.com): **New → Blueprint** → select this repo. Render reads `render.yaml` and provisions everything.
 3. When prompted, set `ADMIN_PASSWORD`. `ADMIN_KEY` is auto-generated for you.
-4. Click **Apply** — Render builds (`npm install && npm run build`) and starts (`npm start`) the service on the **free** plan.
+4. Click **Apply** — Render builds (`npm install --include=dev && npm run build`) and starts (`npm start`) the service on the **free** plan. (`--include=dev` matters: Render's `NODE_ENV=production` would otherwise make `npm install` skip `devDependencies`, which is where `typescript`/`tailwindcss` live — the build needs them even though the running app doesn't.)
 
 ⚠️ **Data persistence caveat.** The free plan has no attached disk, so the JSON
 data store (`data/*.json`) resets whenever the service restarts, redeploys, or
@@ -117,7 +117,7 @@ edit `render.yaml`:
 ```
 `db.ts` already reads `DATA_DIR` (falls back to the local `./data` folder), so no code changes are needed — just the disk + env var.
 
-**Manual setup (no Blueprint)** works too: create a Web Service, build command `npm install && npm run build`, start command `npm start`, add `ADMIN_PASSWORD`/`ADMIN_KEY` env vars, and optionally add a Disk + `DATA_DIR` as above.
+**Manual setup (no Blueprint)** works too: create a Web Service, build command `npm install --include=dev && npm run build`, start command `npm start`, add `ADMIN_PASSWORD`/`ADMIN_KEY` env vars, and optionally add a Disk + `DATA_DIR` as above.
 
 ### Vercel
 
