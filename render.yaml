@@ -1,13 +1,15 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
 # Deploy: Render dashboard → New → Blueprint → select this repo.
-# Render reads this file and provisions the web service + disk automatically.
+# Render reads this file and provisions the web service automatically.
 
 services:
   - type: web
     name: unity-tuner
     runtime: node
-    plan: starter # required for the persistent disk below; use "free" and delete
-                  # the `disk:` block if you're OK with data resetting on redeploy
+    plan: free # no persistent disk on this plan — the JSON data store resets
+               # on every restart/redeploy/spin-down. Fine for a demo; upgrade
+               # to "starter" and add a `disk:` block for real persistence
+               # (see README → Deploy → Render for the exact config).
     buildCommand: npm install && npm run build
     startCommand: npm start
     healthCheckPath: /
@@ -18,9 +20,3 @@ services:
         sync: false # set this in the Render dashboard during blueprint setup
       - key: ADMIN_KEY
         generateValue: true # Render generates a long random secret for you
-      - key: DATA_DIR
-        value: /var/data
-    disk:
-      name: unity-tuner-data
-      mountPath: /var/data
-      sizeGB: 1

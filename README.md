@@ -89,18 +89,35 @@ dashboard for production. All are optional — the app falls back to demo defaul
 
 The app is a standard Next.js 15 project and deploys anywhere Next runs.
 
-### Render (recommended — supports persistent storage)
+### Render
 
 A [`render.yaml`](render.yaml) Blueprint is included, so this is two clicks:
 
 1. Push to GitHub (already done → `orbitspark24-alt/unity-tunner-website`).
 2. In the [Render dashboard](https://dashboard.render.com): **New → Blueprint** → select this repo. Render reads `render.yaml` and provisions everything.
 3. When prompted, set `ADMIN_PASSWORD`. `ADMIN_KEY` is auto-generated for you.
-4. Click **Apply** — Render builds (`npm install && npm run build`) and starts (`npm start`) the service.
+4. Click **Apply** — Render builds (`npm install && npm run build`) and starts (`npm start`) the service on the **free** plan.
 
-The blueprint also attaches a **1GB persistent disk** mounted at `/var/data` and points `DATA_DIR` at it, so bookings, orders, products, reviews, leads and media **survive restarts and redeploys** — unlike serverless platforms. This requires the `starter` plan (paid, disks aren't available on `free`). To skip the disk and stay on the free tier instead, edit `render.yaml`: change `plan: starter` → `plan: free` and delete the `disk:` block — data will then reset whenever the service restarts or redeploys, which is fine for a demo.
+⚠️ **Data persistence caveat.** The free plan has no attached disk, so the JSON
+data store (`data/*.json`) resets whenever the service restarts, redeploys, or
+spins down from inactivity. Fine for a demo/showcase; not for real bookings/orders.
 
-**Manual setup (no Blueprint)** works too: create a Web Service, build command `npm install && npm run build`, start command `npm start`, add `ADMIN_PASSWORD`/`ADMIN_KEY` env vars, and optionally add a Disk + `DATA_DIR` env var as above.
+**Want data to survive restarts?** Upgrade to the `starter` plan and add a disk —
+edit `render.yaml`:
+```yaml
+    plan: starter
+    envVars:
+      # ...existing entries...
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: unity-tuner-data
+      mountPath: /var/data
+      sizeGB: 1
+```
+`db.ts` already reads `DATA_DIR` (falls back to the local `./data` folder), so no code changes are needed — just the disk + env var.
+
+**Manual setup (no Blueprint)** works too: create a Web Service, build command `npm install && npm run build`, start command `npm start`, add `ADMIN_PASSWORD`/`ADMIN_KEY` env vars, and optionally add a Disk + `DATA_DIR` as above.
 
 ### Vercel
 
