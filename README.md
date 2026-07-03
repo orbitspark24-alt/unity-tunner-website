@@ -89,24 +89,38 @@ dashboard for production. All are optional — the app falls back to demo defaul
 
 The app is a standard Next.js 15 project and deploys anywhere Next runs.
 
-**Vercel (quickest)**
+### Render (recommended — supports persistent storage)
+
+A [`render.yaml`](render.yaml) Blueprint is included, so this is two clicks:
+
 1. Push to GitHub (already done → `orbitspark24-alt/unity-tunner-website`).
-2. In Vercel: *New Project* → import the repo. Framework auto-detects as Next.js.
-3. Add `ADMIN_PASSWORD` and `ADMIN_KEY` under *Settings → Environment Variables*.
-4. Deploy.
+2. In the [Render dashboard](https://dashboard.render.com): **New → Blueprint** → select this repo. Render reads `render.yaml` and provisions everything.
+3. When prompted, set `ADMIN_PASSWORD`. `ADMIN_KEY` is auto-generated for you.
+4. Click **Apply** — Render builds (`npm install && npm run build`) and starts (`npm start`) the service.
 
-⚠️ **Data persistence caveat.** The JSON file store (`data/*.json`) writes to disk,
-which is **ephemeral on serverless platforms** (Vercel/Netlify) — writes won't
-persist between requests/deploys. Fine for a demo; for real data, swap the helpers
-in [`src/lib/db.ts`](src/lib/db.ts) for a database (Supabase, Firebase, Postgres…).
-The rest of the app already talks to `db.ts` through a clean async interface, so
-this is the only file you need to change.
+The blueprint also attaches a **1GB persistent disk** mounted at `/var/data` and points `DATA_DIR` at it, so bookings, orders, products, reviews, leads and media **survive restarts and redeploys** — unlike serverless platforms. This requires the `starter` plan (paid, disks aren't available on `free`). To skip the disk and stay on the free tier instead, edit `render.yaml`: change `plan: starter` → `plan: free` and delete the `disk:` block — data will then reset whenever the service restarts or redeploys, which is fine for a demo.
 
-**Any Node host (Render, Railway, a VPS, Docker)**
+**Manual setup (no Blueprint)** works too: create a Web Service, build command `npm install && npm run build`, start command `npm start`, add `ADMIN_PASSWORD`/`ADMIN_KEY` env vars, and optionally add a Disk + `DATA_DIR` env var as above.
+
+### Vercel
+
+1. *New Project* → import the repo. Framework auto-detects as Next.js.
+2. Add `ADMIN_PASSWORD` and `ADMIN_KEY` under *Settings → Environment Variables*.
+3. Deploy.
+
+⚠️ **Data persistence caveat.** Vercel's filesystem is fully serverless/ephemeral —
+there's no disk to attach, so the JSON store (`data/*.json`) **won't persist**
+between requests. Fine for a demo of the UI; for real data on Vercel, swap the
+helpers in [`src/lib/db.ts`](src/lib/db.ts) for a database (Supabase, Firebase,
+Postgres…). The rest of the app already talks to `db.ts` through a clean async
+interface, so that's the only file you'd need to change.
+
+### Any other Node host (Railway, a VPS, Docker)
+
 ```bash
 npm run build && npm start   # serves on $PORT (default 3000)
 ```
-Here the filesystem persists, so the JSON store works as-is — just set the env vars.
+Set `ADMIN_PASSWORD` / `ADMIN_KEY`, and optionally `DATA_DIR` if you mount a volume elsewhere. Where the filesystem persists, the JSON store works as-is.
 
 ## Before a real launch
 

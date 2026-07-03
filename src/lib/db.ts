@@ -6,8 +6,12 @@ import { SEED_PRODUCTS, type Product } from "./products";
  * Tiny JSON-file store so the whole app — storefront + admin CMS — works with
  * zero external services. Swap these helpers for Supabase/Firebase to scale
  * beyond a single server.
+ *
+ * DATA_DIR is overridable so it can point at a mounted persistent disk (e.g.
+ * Render's Disks feature) instead of the ephemeral app directory — see
+ * render.yaml. Defaults to ./data for local dev and hosts with a real filesystem.
  */
-const DATA_DIR = path.join(process.cwd(), "data");
+const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), "data");
 
 async function readJson<T>(file: string, fallback: T): Promise<T> {
   try {
