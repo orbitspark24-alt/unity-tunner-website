@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BOOKING_SERVICES } from "@/lib/services";
+import { useSite } from "@/lib/useSite";
 import { CAR_MAKES, CAR_MODELS, type CarMake } from "@/lib/products";
 import { SERVICE_ICONS, IconCheck, IconChevron } from "@/components/Icons";
 import { cx } from "@/lib/utils";
@@ -23,6 +23,7 @@ const stepAnim = {
 };
 
 export default function BookingFlow() {
+  const { services: BOOKING_SERVICES } = useSite();
   const [step, setStep] = useState(0);
   const [serviceId, setServiceId] = useState("");
   const [car, setCar] = useState({ make: "" as CarMake | "", model: "", year: "", fuel: "Petrol", mods: "", reg: "" });
@@ -211,7 +212,7 @@ export default function BookingFlow() {
             <label className={cx("flex cursor-pointer items-center justify-between rounded-xl border p-5 transition-colors", deposit ? "border-[#e10600] bg-[#e10600]/8" : "border-white/12 bg-[#101012]")}>
               <div>
                 <div className="font-semibold">Pay ₹2,000 deposit now (optional)</div>
-                <div className="mt-1 text-sm text-white/55">Locks your slot with priority. Fully adjusted against the final bill. Razorpay placeholder — no real charge in demo.</div>
+                <div className="mt-1 text-sm text-white/55">Locks your slot with priority. Fully adjusted against the final bill.</div>
               </div>
               <input type="checkbox" checked={deposit} onChange={(e) => setDeposit(e.target.checked)} className="h-5 w-5" />
             </label>
@@ -403,10 +404,10 @@ function Confirmed({ booking, durationHours }: { booking: Booking; durationHours
   const end = booking.date.replace(/-/g, "") + "T" + endH + booking.slot.slice(2).replace(":", "") + "00";
   const gcal =
     `https://calendar.google.com/calendar/render?action=TEMPLATE` +
-    `&text=${encodeURIComponent(`Unity Tuner — ${booking.serviceName}`)}` +
+    `&text=${encodeURIComponent(`Unity Performance — ${booking.serviceName}`)}` +
     `&dates=${start}/${end}` +
-    `&details=${encodeURIComponent(`Booking ${booking.id}\n${booking.car.make} ${booking.car.model}\nUnity Motorsports Performance`)}` +
-    `&location=${encodeURIComponent("Unit 7, Speedway Industrial Estate, Outer Ring Road, Bengaluru 560103")}`;
+    `&details=${encodeURIComponent(`Booking ${booking.id}\n${booking.car.make} ${booking.car.model}\nUnity Performance`)}` +
+    `&location=${encodeURIComponent("L-12, Argora Housing Colony, Argora, Ranchi, Jharkhand 834002")}`;
 
   return (
     <div className="text-center">
@@ -432,10 +433,10 @@ function Confirmed({ booking, durationHours }: { booking: Booking; durationHours
           <div className="flex justify-between py-1.5"><span className="text-white/50">Service</span><span className="font-semibold">{booking.serviceName}</span></div>
           <div className="flex justify-between py-1.5"><span className="text-white/50">Car</span><span>{booking.car.make} {booking.car.model}</span></div>
           <div className="flex justify-between py-1.5"><span className="text-white/50">When</span><span>{formatDate(booking.date)} · {booking.slot}</span></div>
-          <div className="flex justify-between py-1.5"><span className="text-white/50">Deposit</span><span>{booking.deposit ? "₹2,000 paid (demo)" : "Pay at workshop"}</span></div>
+          <div className="flex justify-between py-1.5"><span className="text-white/50">Deposit</span><span>{booking.deposit ? "₹2,000 paid" : "Pay at workshop"}</span></div>
         </div>
         <p className="mx-auto mt-4 max-w-md text-xs text-white/40">
-          Confirmation email + WhatsApp reminder are on their way (demo placeholder). Arrive with a full-ish tank and your service history if you have it.
+          A confirmation email and WhatsApp reminder are on their way. Arrive with a full-ish tank and your service history if you have it.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <a href={gcal} target="_blank" rel="noopener noreferrer" className="btn btn-primary rounded-md px-7 py-3 text-sm">

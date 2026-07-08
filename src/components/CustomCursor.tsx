@@ -12,15 +12,8 @@ export default function CustomCursor() {
 
     let x = -100, y = -100, rx = -100, ry = -100;
     let raf = 0;
+    let running = false;
     let hovering = false;
-
-    const move = (e: MouseEvent) => {
-      x = e.clientX;
-      y = e.clientY;
-      const t = e.target as HTMLElement | null;
-      hovering = !!t?.closest("a, button, input, select, textarea, label, [role='button'], [data-cursor]");
-      if (dot.current) dot.current.style.transform = `translate(${x}px, ${y}px)`;
-    };
 
     const loop = () => {
       rx += (x - rx) * 0.16;
@@ -30,11 +23,27 @@ export default function CustomCursor() {
         ring.current.style.transform = `translate(${rx}px, ${ry}px) scale(${s})`;
         ring.current.style.borderColor = hovering ? "rgba(255,42,31,0.9)" : "rgba(225,6,0,0.75)";
       }
+      // park the loop once the ring has caught up — no idle rAF burn
+      if (Math.abs(x - rx) < 0.1 && Math.abs(y - ry) < 0.1) {
+        running = false;
+        return;
+      }
       raf = requestAnimationFrame(loop);
     };
 
+    const move = (e: MouseEvent) => {
+      x = e.clientX;
+      y = e.clientY;
+      const t = e.target as HTMLElement | null;
+      hovering = !!t?.closest("a, button, input, select, textarea, label, [role='button'], [data-cursor]");
+      if (dot.current) dot.current.style.transform = `translate(${x}px, ${y}px)`;
+      if (!running) {
+        running = true;
+        raf = requestAnimationFrame(loop);
+      }
+    };
+
     window.addEventListener("mousemove", move, { passive: true });
-    raf = requestAnimationFrame(loop);
     return () => {
       window.removeEventListener("mousemove", move);
       cancelAnimationFrame(raf);

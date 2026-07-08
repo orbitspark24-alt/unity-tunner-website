@@ -30,10 +30,23 @@ export default function Navbar() {
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const root = document.documentElement;
+    let idle: ReturnType<typeof setTimeout>;
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      // pause decorative infinite animations mid-scroll so the compositor
+      // can devote frames to scrolling; resume shortly after it settles
+      root.classList.add("is-scrolling");
+      clearTimeout(idle);
+      idle = setTimeout(() => root.classList.remove("is-scrolling"), 160);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(idle);
+      root.classList.remove("is-scrolling");
+    };
   }, []);
 
   useEffect(() => setOpen(false), [pathname]);
@@ -45,17 +58,13 @@ export default function Navbar() {
       className={cx(
         "fixed inset-x-0 top-0 z-[100] border-b transition-all duration-300",
         scrolled
-          ? "border-white/10 bg-[#0a0a0a]/90 backdrop-blur-md"
+          ? "border-white/10 bg-[#0a0a0a]/[0.97]"
           : "border-transparent bg-gradient-to-b from-black/70 to-transparent"
       )}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-3 py-2" aria-label="Unity Motorsports home">
-          <Logo size={scrolled ? 44 : 56} className="transition-all duration-300" />
-          <div className="hidden sm:block leading-none">
-            <div className="display text-lg text-white">Unity Tuner</div>
-            <div className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#e10600]">Motorsports</div>
-          </div>
+        <Link href="/" className="flex items-center gap-3 py-2" aria-label="Unity Performance home">
+          <Logo size={scrolled ? 40 : 52} className="transition-all duration-300" />
         </Link>
 
         <ul className="hidden items-center gap-7 lg:flex">
@@ -126,7 +135,7 @@ export default function Navbar() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-t border-white/10 bg-[#0a0a0a]/95 backdrop-blur-md lg:hidden"
+            className="overflow-hidden border-t border-white/10 bg-[#0a0a0a]/[0.98] lg:hidden"
           >
             <ul className="space-y-1 px-4 py-4">
               {LINKS.map((l, i) => (

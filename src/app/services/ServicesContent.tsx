@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Reveal from "@/components/Reveal";
-import { BOOKING_SERVICES, STAGE_COMPARISON, SERVICE_FAQ } from "@/lib/services";
+import { STAGE_COMPARISON, SERVICE_FAQ } from "@/lib/services";
+import { useSite } from "@/lib/useSite";
 import { SERVICE_ICONS, IconChevron } from "@/components/Icons";
 import { inr, cx } from "@/lib/utils";
 
 export default function ServicesContent() {
+  const { services: BOOKING_SERVICES } = useSite();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (

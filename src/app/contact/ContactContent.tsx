@@ -5,14 +5,11 @@ import { motion } from "framer-motion";
 import Reveal from "@/components/Reveal";
 import { IconWhatsApp, IconCheck } from "@/components/Icons";
 import { waLink } from "@/lib/utils";
-
-const HOURS: [string, string][] = [
-  ["Monday – Friday", "9:00 AM – 7:00 PM"],
-  ["Saturday", "9:00 AM – 7:00 PM"],
-  ["Sunday", "By appointment"],
-];
+import { useSite } from "@/lib/useSite";
 
 export default function ContactContent() {
+  const { settings } = useSite();
+  const ws = settings.workshop;
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [sent, setSent] = useState(false);
 
@@ -30,8 +27,8 @@ export default function ContactContent() {
           <Reveal>
             <div className="overflow-hidden rounded-2xl border border-white/10">
               <iframe
-                title="Unity Motorsports Performance location map"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=77.60%2C12.90%2C77.72%2C12.98&layer=mapnik&marker=12.94%2C77.66"
+                title="Unity Performance location map"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=85.26%2C23.32%2C85.36%2C23.40&layer=mapnik&marker=23.3585%2C85.3050"
                 className="h-72 w-full grayscale-[0.4] contrast-[1.05]"
                 loading="lazy"
               />
@@ -43,17 +40,17 @@ export default function ContactContent() {
               <div className="rounded-xl border border-white/10 bg-[#101012] p-5">
                 <div className="display mb-2 text-sm tracking-[0.25em] text-[#ff2a1f]">Address</div>
                 <p className="text-sm leading-relaxed text-white/70">
-                  Unit 7, Speedway Industrial Estate,<br />Outer Ring Road,<br />Bengaluru 560103
+                  {ws.address1}<br />{ws.address2}
                 </p>
               </div>
               <div className="rounded-xl border border-white/10 bg-[#101012] p-5">
                 <div className="display mb-2 text-sm tracking-[0.25em] text-[#ff2a1f]">Reach Us</div>
                 <p className="space-y-1 text-sm text-white/70">
-                  <a href="tel:+919876543210" className="block hover:text-white">+91 98765 43210</a>
-                  <a href="mailto:pit@unitytuner.in" className="block hover:text-white">pit@unitytuner.in</a>
+                  <a href={`tel:${ws.phone.replace(/\s/g, "")}`} className="block hover:text-white">{ws.phone}</a>
+                  <a href={`mailto:${ws.email}`} className="block hover:text-white">{ws.email}</a>
                 </p>
                 <a
-                  href={waLink("Hi Unity Tuner! Quick question…")}
+                  href={waLink("Hi Unity Performance! Quick question…")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 inline-flex items-center gap-2 rounded-md bg-[#25D366]/15 px-3 py-2 text-sm font-semibold text-[#25D366] transition-colors hover:bg-[#25D366]/25"
@@ -64,10 +61,10 @@ export default function ContactContent() {
               <div className="rounded-xl border border-white/10 bg-[#101012] p-5 sm:col-span-2">
                 <div className="display mb-3 text-sm tracking-[0.25em] text-[#ff2a1f]">Business Hours</div>
                 <dl className="space-y-1.5 text-sm">
-                  {HOURS.map(([d, h]) => (
-                    <div key={d} className="flex justify-between">
-                      <dt className="text-white/55">{d}</dt>
-                      <dd className="font-semibold text-white/85">{h}</dd>
+                  {ws.hours.map((h) => (
+                    <div key={h.days} className="flex justify-between">
+                      <dt className="text-white/55">{h.days}</dt>
+                      <dd className="font-semibold text-white/85">{h.time}</dd>
                     </div>
                   ))}
                 </dl>

@@ -35,7 +35,7 @@ export default function CheckoutPage() {
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: cart, shipping: form, payment: "razorpay-placeholder" }),
+        body: JSON.stringify({ items: cart, shipping: form, payment: "razorpay" }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? "Order failed");
       const data: Order = await res.json();
@@ -112,7 +112,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
               <p className="mt-3 rounded-md bg-white/5 px-3 py-2 text-xs text-white/45">
-                Demo mode — the payment gateway is a placeholder. Placing the order records it without charging anything.
+                Secure checkout. Your order is confirmed once payment is completed.
               </p>
             </div>
           </section>

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import Logo from "./Logo";
 import { IconCheck } from "./Icons";
+import { useSite } from "@/lib/useSite";
 
 const QUICK_LINKS = [
   ["Marketplace", "/shop"],
@@ -17,12 +18,14 @@ const QUICK_LINKS = [
 ] as const;
 
 const SOCIALS = [
-  { label: "Instagram", d: "M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm-5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.5 6a1 1 0 1 1-1 1 1 1 0 0 1 1-1z" },
-  { label: "YouTube", d: "M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.3 5 12 5 12 5s-6.3 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26.5 26.5 0 0 0 2 12a26.5 26.5 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8c1.5.4 7.8.4 7.8.4s6.3 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26.5 26.5 0 0 0 22 12a26.5 26.5 0 0 0-.4-4.8zM10 15V9l5.2 3z" },
-  { label: "X", d: "M17.8 3h3.1l-6.8 7.8L22 21h-6.3l-4.9-6.4L5.2 21H2.1l7.3-8.3L2 3h6.4l4.4 5.9zm-1.1 16.1h1.7L7.5 4.8H5.7z" },
+  { label: "Instagram", href: "https://instagram.com/unityperformance", d: "M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm10 2H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm-5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.5 6a1 1 0 1 1-1 1 1 1 0 0 1 1-1z" },
+  { label: "Facebook", href: "https://facebook.com/unityperformance", d: "M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z" },
+  { label: "LinkedIn", href: "https://linkedin.com/company/unityperformance", d: "M4.98 3.5A2.5 2.5 0 1 1 2.5 6 2.5 2.5 0 0 1 4.98 3.5zM3 8.5h4V21H3zM9.5 8.5h3.8v1.7h.05a4.2 4.2 0 0 1 3.77-2.07c4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.5c0-1.3-.02-3-1.84-3s-2.12 1.43-2.12 2.9V21h-4z" },
 ];
 
 export default function Footer() {
+  const { settings } = useSite();
+  const ws = settings.workshop;
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
   const pathname = usePathname();
@@ -33,21 +36,19 @@ export default function Footer() {
     <footer className="carbon-bg border-t border-white/10">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <div className="flex items-center gap-3">
-            <Logo size={64} />
-            <div className="leading-none">
-              <div className="display text-xl">Unity Tuner</div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#e10600]">Motorsports Performance</div>
-            </div>
+          <div className="flex items-center">
+            <Logo size={60} />
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/55">
-            Precision ECU calibration, dyno-proven parts and honest numbers. Tuning India&apos;s streets since 2015.
+            Bespoke ECU calibration that bridges the gap between stock performance and racing-grade efficiency. 19+ years, 30,000+ vehicles optimized.
           </p>
           <div className="mt-5 flex gap-3">
             {SOCIALS.map((s) => (
               <a
                 key={s.label}
-                href="#"
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={s.label}
                 className="rounded-md border border-white/15 p-2.5 text-white/60 transition-colors hover:border-[#e10600] hover:text-[#ff2a1f]"
               >
@@ -74,10 +75,14 @@ export default function Footer() {
         <div>
           <h3 className="display mb-4 text-sm tracking-[0.25em] text-white/85">Workshop</h3>
           <address className="space-y-2.5 text-sm not-italic leading-relaxed text-white/55">
-            <p>Unit 7, Speedway Industrial Estate,<br />Outer Ring Road, Bengaluru 560103</p>
-            <p><a href="tel:+919876543210" className="hover:text-white">+91 98765 43210</a></p>
-            <p><a href="mailto:pit@unitytuner.in" className="hover:text-white">pit@unitytuner.in</a></p>
-            <p className="text-white/40">Mon–Sat · 9:00–19:00<br />Sunday · By appointment</p>
+            <p>{ws.address1}<br />{ws.address2}</p>
+            <p><a href={`tel:${ws.phone.replace(/\s/g, "")}`} className="hover:text-white">{ws.phone}</a></p>
+            <p><a href={`mailto:${ws.email}`} className="hover:text-white">{ws.email}</a></p>
+            <p className="text-white/40">
+              {ws.hours.map((h) => (
+                <span key={h.days} className="block">{h.days} · {h.time}</span>
+              ))}
+            </p>
           </address>
         </div>
 
@@ -134,7 +139,7 @@ export default function Footer() {
 
       <div className="metal-line" />
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-white/40 sm:flex-row sm:px-6">
-        <span>© {new Date().getFullYear()} Unity Motorsports Performance. All torque reserved.</span>
+        <span>© {new Date().getFullYear()} Unity Performance. All torque reserved.</span>
         <span className="display tracking-[0.3em] text-[#e10600]/80">More Power. Zero Compromise.</span>
       </div>
     </footer>

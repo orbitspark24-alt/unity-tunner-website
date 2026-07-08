@@ -144,7 +144,20 @@ body {
 .btn-primary {
   background: var(--color-race);
   color: #fff;
+  box-shadow: 0 0 14px rgba(225, 6, 0, 0.38);
+}
+
+/* idle glow pulse — composited opacity on a pseudo-element, no repaints */
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  box-shadow: 0 0 26px rgba(225, 6, 0, 0.6);
+  opacity: 0;
   animation: rev-glow 2.6s ease-in-out infinite;
+  will-change: opacity;
 }
 
 .btn-primary:hover {
@@ -165,9 +178,9 @@ body {
 }
 
 @keyframes rev-glow {
-  0%, 100% { box-shadow: 0 0 12px rgba(225, 6, 0, 0.35); }
-  45% { box-shadow: 0 0 26px rgba(225, 6, 0, 0.65); }
-  55% { box-shadow: 0 0 22px rgba(225, 6, 0, 0.55); }
+  0%, 100% { opacity: 0; }
+  45% { opacity: 1; }
+  55% { opacity: 0.8; }
 }
 
 /* ---------- cards & micro-interactions ---------- */
@@ -231,10 +244,12 @@ body {
 .smoke {
   position: absolute;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(190, 190, 200, 0.5), transparent 70%);
-  filter: blur(18px);
+  /* soft edge via gradient falloff instead of a heavy blur filter */
+  background: radial-gradient(circle, rgba(190, 190, 200, 0.35) 0%, rgba(190, 190, 200, 0.18) 40%, transparent 68%);
+  filter: blur(8px);
   animation: smoke-drift var(--dur, 9s) linear infinite;
   animation-delay: var(--delay, 0s);
+  will-change: transform, opacity;
 }
 
 /* ---------- tach needle ---------- */
@@ -253,6 +268,7 @@ body {
 .tach-needle {
   transform-origin: 50% 100%;
   animation: needle-idle 7s cubic-bezier(0.55, 0, 0.3, 1) infinite;
+  will-change: transform;
 }
 
 /* ---------- misc ---------- */
@@ -269,6 +285,48 @@ body {
   border-radius: 9999px;
   background: rgba(37, 211, 102, 0.4);
   animation: pulse-ring 2s ease-out infinite;
+}
+
+/* below-fold sections: browser skips layout/paint until scrolled near */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+}
+
+/*
+ * While the user is actively scrolling, freeze the decorative infinite
+ * animations (hero tachometer needle, drifting smoke, button glow, marquee,
+ * WhatsApp pulse). SVG/filter animations repaint every frame and compete with
+ * the scroll compositor; pausing them for the duration of the scroll keeps
+ * scrolling glass-smooth, and they resume ~160ms after it stops.
+ */
+.is-scrolling .tach-needle,
+.is-scrolling .smoke,
+.is-scrolling .btn-primary::before,
+.is-scrolling .marquee-track,
+.is-scrolling .wa-ring::before {
+  animation-play-state: paused;
+}
+
+/* respect users who ask for less motion — kills the infinite loops */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .btn-primary::before,
+  .smoke,
+  .tach-needle,
+  .marquee-track,
+  .wa-ring::before {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 input, select, textarea {

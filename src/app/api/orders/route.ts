@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOrders, saveOrders, getProducts, makeId, type Order } from "@/lib/db";
+import { requireAdmin } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+/** Full order list contains customer PII — admin console only. */
+export async function GET(req: NextRequest) {
+  if (!requireAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const orders = await getOrders();
   return NextResponse.json(orders.sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
 }
@@ -35,7 +38,7 @@ export async function POST(req: NextRequest) {
     items: lines,
     total: subtotal + shipCost,
     shipping,
-    payment: payment ?? "razorpay-placeholder",
+    payment: payment ?? "razorpay",
     status: "paid",
     createdAt: new Date().toISOString(),
   };

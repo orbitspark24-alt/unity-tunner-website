@@ -11,36 +11,51 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const rajdhani = Rajdhani({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-rajdhani", display: "swap" });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://unityperformance.in";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Unity Tuner — Unity Motorsports Performance | ECU Tuning, Dyno & Performance Parts",
-    template: "%s | Unity Tuner",
+    default: "Unity Performance — ECU Remapping, Chiptuning & EGR Solutions | Ranchi",
+    template: "%s | Unity Performance",
   },
   description:
-    "Precision ECU remapping, dyno tuning, turbo upgrades and performance parts. Dyno-proven power for BMW, Audi, VW, Toyota, Hyundai, Tata, Mahindra & more. Bengaluru.",
-  keywords: ["car tuning", "ECU remap", "dyno tuning", "stage 1", "performance parts", "turbo upgrade", "Bengaluru"],
+    "Bespoke ECU remapping, chiptuning, EGR and transmission optimization. Motorsport-grade engineering for your daily drive — 19+ years, 30,000+ vehicles optimized. Ranchi, Jharkhand.",
+  keywords: ["ECU remapping", "chiptuning", "EGR solution", "transmission optimization", "car tuning", "performance tuning", "Ranchi"],
+  icons: { icon: "/favicon.png" },
+  alternates: { canonical: "./" },
+  robots: { index: true, follow: true },
   openGraph: {
-    title: "Unity Tuner — Unleash Your Machine",
-    description: "Precision ECU tuning, performance parts & dyno-proven power.",
+    title: "Unity Performance — Unlock Your Vehicle's True Performance",
+    description: "Bespoke ECU calibration that bridges stock performance and racing-grade efficiency.",
     type: "website",
     locale: "en_IN",
+    siteName: "Unity Performance",
+    images: [{ url: "/unity-performance-logo.jpeg", width: 1285, height: 431, alt: "Unity Performance logo" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Unity Performance — Unlock Your Vehicle's True Performance",
+    description: "Bespoke ECU calibration that bridges stock performance and racing-grade efficiency.",
+    images: ["/unity-performance-logo.jpeg"],
   },
 };
 
 const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "AutoRepair",
-  name: "Unity Motorsports Performance",
-  alternateName: "Unity Tuner",
-  description: "Professional ECU tuning, dyno calibration and performance parts.",
+  name: "Unity Performance",
+  description: "Professional ECU remapping, chiptuning, EGR and transmission optimization.",
+  email: "support@unityperformance.in",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Unit 7, Speedway Industrial Estate, Outer Ring Road",
-    addressLocality: "Bengaluru",
-    postalCode: "560103",
+    streetAddress: "L-12, Argora Housing Colony, Argora",
+    addressLocality: "Ranchi",
+    addressRegion: "Jharkhand",
+    postalCode: "834002",
     addressCountry: "IN",
   },
-  telephone: "+91-98765-43210",
+  telephone: "+91-87096-47229",
   openingHours: "Mo-Sa 09:00-19:00",
   priceRange: "₹₹₹",
   aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "870" },

@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getBookings, saveBookings, getBlockedDates, makeId, SLOT_TIMES, type Booking } from "@/lib/db";
+import { getBookings, saveBookings, getBlockedDates, getServices, makeId, SLOT_TIMES, type Booking } from "@/lib/db";
+import { requireAdmin } from "@/lib/admin";
 
-export async function GET() {
+/** Full booking list contains customer PII — admin console only. */
+export async function GET(req: NextRequest) {
+  if (!requireAdmin(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const bookings = await getBookings();
   return NextResponse.json(bookings.sort((a, b) => (a.date + a.slot).localeCompare(b.date + b.slot)));
 }
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { serviceId, serviceName, price, car, date, slot, contact, deposit } = body ?? {};
+  const { serviceId, car, date, slot, contact, deposit } = body ?? {};
 
   if (!serviceId || !date || !slot || !car?.make || !car?.model || !contact?.name || !contact?.phone || !contact?.email) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+  // name + price come from the live services catalogue — never trust client values
+  const service = (await getServices()).find((s) => s.id === serviceId);
+  if (!service) {
+    return NextResponse.json({ error: "Unknown service" }, { status: 400 });
   }
   if (!SLOT_TIMES.includes(slot)) {
     return NextResponse.json({ error: "Invalid slot" }, { status: 400 });
@@ -34,8 +42,8 @@ export async function POST(req: NextRequest) {
   const booking: Booking = {
     id: makeId("UT"),
     serviceId,
-    serviceName,
-    price,
+    serviceName: service.name,
+    price: service.price,
     car,
     date,
     slot,
@@ -46,9 +54,6 @@ export async function POST(req: NextRequest) {
   };
   bookings.push(booking);
   await saveBookings(bookings);
-
-  // Placeholder: hook confirmation email / WhatsApp API here.
-  console.log(`[notify] Booking ${booking.id} confirmed → email ${contact.email}, WhatsApp ${contact.phone}`);
 
   return NextResponse.json(booking, { status: 201 });
 }

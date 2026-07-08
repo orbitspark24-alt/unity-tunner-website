@@ -17,10 +17,16 @@ const I = {
   mail: (p: P) => <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} {...p}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 7l8 6 8-6"/></svg>,
   star: (p: P) => <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} {...p}><path d="M12 3l2.9 6.2 6.6.8-4.9 4.6 1.3 6.6L12 17.4 6.1 20.8l1.3-6.6L2.5 10l6.6-.8L12 3z" strokeLinejoin="round"/></svg>,
   img: (p: P) => <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} {...p}><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4 4 3 3-2 4 3"/></svg>,
+  globe: (p: P) => <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} {...p}><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18"/></svg>,
+  wrench: (p: P) => <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} {...p}><path d="M14.7 6.3a4.5 4.5 0 0 0-6 5.6L3 17.6V21h3.4l5.7-5.7a4.5 4.5 0 0 0 5.6-6L14.5 12l-2.5-2.5 2.7-3.2z" strokeLinejoin="round"/></svg>,
+  gauge: (p: P) => <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} {...p}><path d="M4 19a9 9 0 1 1 16 0"/><path d="M12 14l4-5"/><circle cx="12" cy="14" r="1.6"/></svg>,
 };
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: I.dash, exact: true },
+  { href: "/admin/site", label: "Site Content", icon: I.globe },
+  { href: "/admin/services", label: "Services", icon: I.gauge },
+  { href: "/admin/builds", label: "Builds", icon: I.wrench },
   { href: "/admin/products", label: "Products", icon: I.box },
   { href: "/admin/bookings", label: "Bookings", icon: I.cal },
   { href: "/admin/orders", label: "Sales / Orders", icon: I.cart },
@@ -131,10 +137,6 @@ function LoginGate({ onDone }: { onDone: () => void }) {
           {err && <p className="text-sm text-[#ff2a1f]">Wrong password. Try again.</p>}
           <button type="submit" disabled={busy} className="btn btn-primary w-full rounded-md px-6 py-3 text-sm disabled:opacity-60">{busy ? "Checking…" : "Unlock"}</button>
         </form>
-        <p className="mt-5 rounded-md bg-white/5 px-3 py-2 text-xs text-white/40">
-          Default password: <span className="font-mono font-semibold text-white/70">unity2026</span>
-          <br />Set <span className="font-mono">ADMIN_PASSWORD</span> to change it.
-        </p>
       </motion.div>
     </div>
   );

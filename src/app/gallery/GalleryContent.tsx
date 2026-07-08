@@ -2,13 +2,20 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BUILDS, type Build } from "@/lib/builds";
+import type { Build } from "@/lib/builds";
+import { useSite } from "@/lib/useSite";
 import { IconX } from "@/components/Icons";
 import { cx } from "@/lib/utils";
 
 const FILTERS = ["All", "German", "JDM", "Indian", "Diesel SUV"] as const;
 
 function BuildArt({ b, big = false }: { b: Build; big?: boolean }) {
+  if (b.image) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={b.image} alt={`${b.title} — ${b.car}`} className="h-full w-full object-cover" loading="lazy" />
+    );
+  }
   return (
     <div className="relative h-full w-full" style={{ background: `radial-gradient(circle at 30% 25%, hsl(${b.hue} 55% 24%), #0b0b0d 78%)` }}>
       <svg viewBox="0 0 240 80" className={cx("absolute inset-x-0 mx-auto w-4/5 text-white/85", big ? "bottom-16" : "bottom-10")} fill="currentColor" aria-hidden>
@@ -23,10 +30,11 @@ function BuildArt({ b, big = false }: { b: Build; big?: boolean }) {
 }
 
 export default function GalleryContent() {
+  const { builds } = useSite();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
   const [selected, setSelected] = useState<Build | null>(null);
 
-  const shown = BUILDS.filter((b) => filter === "All" || b.category === filter);
+  const shown = builds.filter((b) => filter === "All" || b.category === filter);
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-24 pt-28 sm:px-6">

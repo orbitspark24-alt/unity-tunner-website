@@ -1,6 +1,9 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { SEED_PRODUCTS, type Product } from "./products";
+import { BUILDS, type Build } from "./builds";
+import { BOOKING_SERVICES, type TuneService } from "./services";
+import { DEFAULT_SITE, type SiteSettings } from "./site";
 
 /**
  * Tiny JSON-file store so the whole app — storefront + admin CMS — works with
@@ -13,10 +16,21 @@ import { SEED_PRODUCTS, type Product } from "./products";
  */
 const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), "data");
 
+/**
+ * In-memory read cache. The app runs as a single server instance (JSON-file
+ * store by design), so caching parsed files here is safe: every write goes
+ * through writeJson which refreshes the cache. Cuts disk+parse off the hot
+ * path for storefront reads (/api/products on every shop page load).
+ */
+const cache = new Map<string, unknown>();
+
 async function readJson<T>(file: string, fallback: T): Promise<T> {
+  if (cache.has(file)) return cache.get(file) as T;
   try {
     const raw = await fs.readFile(path.join(DATA_DIR, file), "utf-8");
-    return JSON.parse(raw) as T;
+    const parsed = JSON.parse(raw) as T;
+    cache.set(file, parsed);
+    return parsed;
   } catch {
     return fallback;
   }
@@ -25,6 +39,7 @@ async function readJson<T>(file: string, fallback: T): Promise<T> {
 async function writeJson(file: string, data: unknown) {
   await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.writeFile(path.join(DATA_DIR, file), JSON.stringify(data, null, 2), "utf-8");
+  cache.set(file, data);
 }
 
 async function fileExists(file: string) {
@@ -106,39 +121,7 @@ export async function getProductBySlug(slug: string) {
 
 /* ---------------------------------------------------------------- reviews */
 
-const REVIEW_TEMPLATES = [
-  { name: "Vikram S.", rating: 5, text: "Fit perfectly, noticeable difference on the first drive. Unity's install team had it done while I waited." },
-  { name: "Ananya R.", rating: 5, text: "Quality is properly premium — packaging, hardware, instructions all spot on. Would buy again." },
-  { name: "Farhan M.", rating: 4, text: "Great part, took a week extra to ship to my city. Performance as advertised though." },
-  { name: "Karthik V.", rating: 5, text: "Genuine article, invoiced, and the fitment checker was bang on. Zero fuss." },
-  { name: "Meera J.", rating: 5, text: "Ordered on a whim, blown away by the finish. Looks and works even better in person." },
-];
-
-async function seedReviews(products: Product[]): Promise<Review[]> {
-  const reviews: Review[] = [];
-  products.forEach((p, pi) => {
-    const n = 2 + (pi % 2);
-    for (let i = 0; i < n; i++) {
-      const t = REVIEW_TEMPLATES[(pi + i) % REVIEW_TEMPLATES.length];
-      reviews.push({
-        id: makeId("REV"),
-        slug: p.slug,
-        name: t.name,
-        rating: t.rating,
-        text: t.text,
-        approved: true,
-        createdAt: new Date(Date.now() - (pi * 3 + i) * 86400000).toISOString(),
-      });
-    }
-  });
-  await writeJson("reviews.json", reviews);
-  return reviews;
-}
-
 export async function getReviews(): Promise<Review[]> {
-  if (!(await fileExists("reviews.json"))) {
-    return seedReviews(await getProducts());
-  }
   return readJson<Review[]>("reviews.json", []);
 }
 export const saveReviews = (r: Review[]) => writeJson("reviews.json", r);
@@ -156,6 +139,47 @@ export async function getMedia(): Promise<Media[]> {
   return readJson<Media[]>("media.json", []);
 }
 export const saveMedia = (m: Media[]) => writeJson("media.json", m);
+
+/* ---------------------------------------------------------- site settings */
+
+/** Deep-ish merge so settings saved before a new field was added still get its default. */
+export async function getSettings(): Promise<SiteSettings> {
+  const saved = await readJson<Partial<SiteSettings>>("settings.json", {});
+  return {
+    hero: { ...DEFAULT_SITE.hero, ...saved.hero },
+    stats: saved.stats?.length ? saved.stats : DEFAULT_SITE.stats,
+    aboutStats: saved.aboutStats?.length ? saved.aboutStats : DEFAULT_SITE.aboutStats,
+    testimonials: saved.testimonials?.length ? saved.testimonials : DEFAULT_SITE.testimonials,
+    workshop: {
+      ...DEFAULT_SITE.workshop,
+      ...saved.workshop,
+      hours: saved.workshop?.hours?.length ? saved.workshop.hours : DEFAULT_SITE.workshop.hours,
+    },
+  };
+}
+export const saveSettings = (s: SiteSettings) => writeJson("settings.json", s);
+
+/* ---------------------------------------------------------------- services */
+
+export async function getServices(): Promise<TuneService[]> {
+  if (!(await fileExists("services.json"))) {
+    await writeJson("services.json", BOOKING_SERVICES);
+    return BOOKING_SERVICES;
+  }
+  return readJson<TuneService[]>("services.json", BOOKING_SERVICES);
+}
+export const saveServices = (s: TuneService[]) => writeJson("services.json", s);
+
+/* ------------------------------------------------------------------ builds */
+
+export async function getBuilds(): Promise<Build[]> {
+  if (!(await fileExists("builds.json"))) {
+    await writeJson("builds.json", BUILDS);
+    return BUILDS;
+  }
+  return readJson<Build[]>("builds.json", BUILDS);
+}
+export const saveBuilds = (b: Build[]) => writeJson("builds.json", b);
 
 /* --------------------------------------------------- bookings / orders / blocked */
 

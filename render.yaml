@@ -4,12 +4,10 @@
 
 services:
   - type: web
-    name: unity-tuner
+    name: unity-performance
     runtime: node
-    plan: free # no persistent disk on this plan — the JSON data store resets
-               # on every restart/redeploy/spin-down. Fine for a demo; upgrade
-               # to "starter" and add a `disk:` block for real persistence
-               # (see README → Deploy → Render for the exact config).
+    plan: starter # persistent disk requires a paid plan; the disk below keeps
+                  # bookings/orders/content across restarts and redeploys
     # --include=dev is required: NODE_ENV=production below makes plain
     # `npm install` skip devDependencies, which is where typescript/tailwindcss
     # live — the build needs them even though the app doesn't at runtime.
@@ -23,3 +21,9 @@ services:
         sync: false # set this in the Render dashboard during blueprint setup
       - key: ADMIN_KEY
         generateValue: true # Render generates a long random secret for you
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: unity-performance-data
+      mountPath: /var/data
+      sizeGB: 1

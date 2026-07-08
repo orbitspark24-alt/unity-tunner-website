@@ -1,33 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import Tachometer from "./Tachometer";
+import { useSite } from "@/lib/useSite";
 
 const SMOKE = [
   { left: "8%", bottom: "0%", size: 130, dur: "10s", delay: "0s", dx: "140px", o: 0.12 },
   { left: "22%", bottom: "-4%", size: 180, dur: "13s", delay: "2s", dx: "-90px", o: 0.1 },
   { left: "58%", bottom: "-2%", size: 150, dur: "11s", delay: "4.5s", dx: "120px", o: 0.13 },
   { left: "76%", bottom: "0%", size: 200, dur: "14s", delay: "1s", dx: "-140px", o: 0.09 },
-  { left: "40%", bottom: "-6%", size: 160, dur: "12s", delay: "6s", dx: "100px", o: 0.11 },
 ];
 
 export default function Hero() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "38%"]);
-  const yText = useTransform(scrollYProgress, [0, 1], ["0%", "90%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-
+  const { settings } = useSite();
+  const { hero } = settings;
   return (
-    <section ref={ref} className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      {/* parallax background layers */}
-      <motion.div style={{ y: yBg }} className="absolute inset-0">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+      {/*
+        Background is intentionally static: scroll-transforming this layer
+        (carbon texture + grid + SVG gauge + smoke) forced the GPU to
+        re-composite a full-screen stack every frame and janked scrolling.
+        Depth comes from the text parallax below, which is a small layer.
+      */}
+      <div className="absolute inset-0">
         <div className="carbon-bg absolute inset-0" />
         <div className="grid-fade absolute inset-0" />
-        {/* dyno glow under the car */}
-        <div className="absolute bottom-0 left-1/2 h-64 w-[130%] -translate-x-1/2 rounded-[100%] bg-[#e10600]/12 blur-3xl" />
+        {/* dyno glow under the car — pure gradient, no blur filter */}
+        <div
+          className="absolute bottom-0 left-1/2 h-72 w-[130%] -translate-x-1/2"
+          style={{ background: "radial-gradient(ellipse 50% 100% at 50% 100%, rgba(225,6,0,0.14), transparent 70%)" }}
+        />
         {/* tachometer, faint, center */}
         <div className="absolute left-1/2 top-1/2 w-[560px] max-w-[95vw] -translate-x-1/2 -translate-y-[58%] opacity-25">
           <Tachometer className="w-full" />
@@ -49,33 +52,33 @@ export default function Hero() {
             }}
           />
         ))}
-      </motion.div>
+      </div>
 
       {/* vignette */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,#0a0a0a_95%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
 
-      {/* content */}
-      <motion.div style={{ y: yText, opacity }} className="relative z-10 mx-auto max-w-5xl px-4 pt-24 text-center sm:px-6">
+      {/* content — static (no scroll-linked transform) so the hero scrolls natively at 60fps */}
+      <div className="relative z-10 mx-auto max-w-5xl px-4 pt-24 text-center sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15 }}
           className="display mb-4 inline-block rounded-full border border-[#e10600]/40 bg-[#e10600]/10 px-4 py-1.5 text-xs tracking-[0.3em] text-[#ff2a1f]"
         >
-          Dyno-Proven Since 2015
+          {hero.badge}
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, y: 40, filter: "blur(8px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="display text-6xl leading-[0.9] sm:text-8xl lg:text-9xl"
         >
-          Unleash
+          {hero.title1}
           <br />
           <span className="text-[#e10600]" style={{ textShadow: "0 0 60px rgba(225,6,0,0.5)" }}>
-            Your Machine
+            {hero.title2}
           </span>
         </motion.h1>
 
@@ -85,7 +88,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.55 }}
           className="mx-auto mt-6 max-w-xl text-base text-white/65 sm:text-lg"
         >
-          Precision ECU tuning, performance parts &amp; dyno-proven power. No guesswork — every calibration verified on our AWD dyno.
+          {hero.subtitle}
         </motion.p>
 
         <motion.div
@@ -101,7 +104,7 @@ export default function Hero() {
             Shop Parts
           </Link>
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* scroll hint */}
       <motion.div

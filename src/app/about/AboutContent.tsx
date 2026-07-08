@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import Reveal from "@/components/Reveal";
+import { useSite } from "@/lib/useSite";
 import Counter from "@/components/Counter";
 import Logo from "@/components/Logo";
 import { PARTNER_BRANDS } from "@/lib/builds";
@@ -18,22 +18,18 @@ const STORY = [
   { year: "2015", text: "A rented garage, one laptop, and a stubborn belief that Indian cars deserved proper tuning." },
   { year: "2017", text: "First AWD dyno in the region. The 'proof, not promises' policy is born — every tune ships with graphs." },
   { year: "2020", text: "In-house fabrication shop opens. Downpipes and cat-backs, TIG-welded metres from the dyno." },
-  { year: "2023", text: "Car #1,000 rolls out. A Polo GT that started it all comes back for Stage 3." },
-  { year: "2026", text: "1,200+ cars tuned. Same garage energy, much bigger toys." },
+  { year: "2023", text: "The 20,000th vehicle rolls out. A Polo GT that started it all comes back for Stage 3." },
+  { year: "2026", text: "30,000+ vehicles optimized. Same garage energy, much bigger toys." },
 ];
 
 export default function AboutContent() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const y1 = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const y2 = useTransform(scrollYProgress, [0, 1], ["0%", "60%"]);
-
+  const { settings } = useSite();
   return (
     <div className="pb-24">
-      {/* parallax hero */}
-      <div ref={heroRef} className="relative flex h-[70vh] items-center justify-center overflow-hidden">
-        <motion.div style={{ y: y1 }} className="carbon-bg absolute inset-0" />
-        <motion.div style={{ y: y2 }} className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(225,6,0,0.14),transparent_60%)]" />
+      {/* hero — static backgrounds; scroll-transforming full-screen layers janks scrolling */}
+      <div className="relative flex h-[70vh] items-center justify-center overflow-hidden">
+        <div className="carbon-bg absolute inset-0" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(225,6,0,0.14),transparent_60%)]" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
         <div className="relative z-10 px-4 text-center">
           <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }}>
@@ -47,8 +43,8 @@ export default function AboutContent() {
       <section className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
         <Reveal>
           <p className="text-center text-lg leading-relaxed text-white/70">
-            Unity Motorsports Performance started with one conviction: tuning isn&apos;t magic, it&apos;s measurement.
-            A decade later we&apos;ve calibrated everything from Altos to AMGs — and every single one left with a
+            Unity Performance started with one conviction: tuning isn&apos;t magic, it&apos;s measurement.
+            19+ years later we&apos;ve calibrated everything from Altos to AMGs — and every single one left with a
             dyno sheet proving the gains.
           </p>
         </Reveal>
@@ -69,13 +65,9 @@ export default function AboutContent() {
       {/* stats */}
       <section className="border-y border-white/10 bg-[#0d0d0f]">
         <div className="mx-auto grid max-w-5xl grid-cols-3 gap-6 px-4 py-14 text-center sm:px-6">
-          {[
-            { to: 1200, suffix: "+", label: "Cars Tuned" },
-            { to: 870, suffix: "+", label: "5★ Reviews" },
-            { to: 25000, suffix: "+", label: "Dyno Pulls Logged" },
-          ].map((s) => (
+          {settings.aboutStats.map((s) => (
             <div key={s.label}>
-              <div className="display text-3xl text-white sm:text-5xl"><Counter to={s.to} suffix={s.suffix} /></div>
+              <div className="display text-3xl text-white sm:text-5xl"><Counter to={s.value} prefix={s.prefix} suffix={s.suffix} decimals={s.decimals} /></div>
               <div className="mt-2 text-[11px] uppercase tracking-[0.25em] text-white/45 sm:text-xs">{s.label}</div>
             </div>
           ))}

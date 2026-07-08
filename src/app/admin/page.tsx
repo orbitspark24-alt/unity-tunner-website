@@ -53,9 +53,6 @@ export default function AdminDashboard() {
           <div className="display text-xs tracking-[0.4em] text-[#ff2a1f]">Overview</div>
           <h1 className="display text-4xl">Dashboard</h1>
         </div>
-        <span className="rounded-md border border-yellow-600/40 bg-yellow-600/10 px-3 py-1.5 text-xs text-yellow-500">
-          Demo console — data stored locally in JSON
-        </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">

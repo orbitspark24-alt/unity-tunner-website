@@ -2,21 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { TESTIMONIALS } from "@/lib/builds";
+import { useSite } from "@/lib/useSite";
 import { IconStar } from "./Icons";
 import { cx } from "@/lib/utils";
 
 export default function TestimonialsSlider() {
+  const { settings } = useSite();
+  const TESTIMONIALS = settings.testimonials;
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || TESTIMONIALS.length < 2) return;
     const t = setInterval(() => setI((v) => (v + 1) % TESTIMONIALS.length), 5500);
     return () => clearInterval(t);
-  }, [paused]);
+  }, [paused, TESTIMONIALS.length]);
 
-  const t = TESTIMONIALS[i];
+  const t = TESTIMONIALS[i % TESTIMONIALS.length];
 
   return (
     <div

@@ -11,6 +11,7 @@ export interface Build {
   mods: string[];
   quote: string;
   hue: number;
+  image?: string; // car photo URL; falls back to the hue gradient + silhouette when empty
   tall?: boolean;
 }
 
@@ -115,21 +116,21 @@ export interface Testimonial {
 
 export const TESTIMONIALS: Testimonial[] = [
   {
-    name: "Arjun Mehta",
-    car: "VW Polo GT TSI — Stage 2",
-    text: "Three shops told me my numbers were 'impossible on stock turbo'. Unity put it on the dyno, showed me the graph, and the car has been flawless for 18 months and 25,000 km. These guys tune with data, not bravado.",
+    name: "Rahul Sharma",
+    car: "Bangalore — ECU Remapping",
+    text: "I got ECU remapping done for my car and the improvement is clearly noticeable. The pickup has increased and the driving experience feels much smoother now.",
     rating: 5, hue: 0,
   },
   {
-    name: "Kavya Reddy",
-    car: "BMW 330i — Stage 1",
-    text: "The before/after dyno sheets sold me. +62 HP verified in front of my eyes, and the car actually drives smoother in traffic than stock. Worth every rupee.",
+    name: "Amit Verma",
+    car: "Delhi — Performance Tuning",
+    text: "Very happy with the service. The technicians really understand how performance tuning works. My car now has better acceleration and the engine feels much more responsive.",
     rating: 5, hue: 210,
   },
   {
-    name: "Rohan D'Souza",
-    car: "Fortuner 2.8 — Stage 1 Diesel",
-    text: "Tows my boat up ghats without dropping a gear now. No smoke, no drama, mileage actually improved on the highway. Should have done this years ago.",
+    name: "Rohit Gupta",
+    car: "Mumbai — ECU Remapping",
+    text: "If you are looking to improve your car's performance, this is the right place. After the tuning, the power delivery is much stronger and the vehicle drives much better on highways.",
     rating: 5, hue: 30,
   },
   {

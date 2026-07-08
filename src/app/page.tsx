@@ -12,15 +12,8 @@ import TestimonialsSlider from "@/components/TestimonialsSlider";
 import ProductCard from "@/components/ProductCard";
 import { SERVICE_ICONS, IconChevron } from "@/components/Icons";
 import { PRODUCTS, type Product } from "@/lib/products";
-import { BUILDS } from "@/lib/builds";
+import { useSite } from "@/lib/useSite";
 import { cx } from "@/lib/utils";
-
-const STATS = [
-  { to: 1200, suffix: "+", label: "Cars Tuned" },
-  { to: 180, prefix: "+", suffix: "", label: "Avg HP Gained" },
-  { to: 10, suffix: "+", label: "Years Experience" },
-  { to: 4.9, suffix: "★", decimals: 1, label: "Customer Rating" },
-];
 
 const SERVICES_PREVIEW = [
   { icon: "ecu", name: "ECU Remapping", desc: "Stage 1 / 2 / 3 custom calibrations, written in-house on our dyno.", href: "/services" },
@@ -43,6 +36,7 @@ function SectionTitle({ kicker, title, sub }: { kicker: string; title: string; s
 
 export default function HomePage() {
   const carouselRef = useRef<HTMLDivElement>(null);
+  const { settings, builds } = useSite();
   const [products, setProducts] = useState<Product[]>(PRODUCTS);
 
   useEffect(() => {
@@ -65,10 +59,10 @@ export default function HomePage() {
       {/* stats bar */}
       <section className="relative border-y border-white/10 bg-[#0d0d0f]">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-y-8 px-4 py-12 sm:px-6 lg:grid-cols-4">
-          {STATS.map((s, i) => (
+          {settings.stats.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.1} className="text-center">
               <div className="display text-4xl text-white sm:text-5xl">
-                <Counter to={s.to} prefix={s.prefix ?? ""} suffix={s.suffix} decimals={s.decimals ?? 0} />
+                <Counter to={s.value} prefix={s.prefix} suffix={s.suffix} decimals={s.decimals} />
               </div>
               <div className="mt-2 text-xs uppercase tracking-[0.25em] text-white/45">{s.label}</div>
             </Reveal>
@@ -141,7 +135,7 @@ export default function HomePage() {
       </section>
 
       {/* dyno graph */}
-      <section className="mx-auto max-w-5xl px-4 py-24 sm:px-6">
+      <section className="cv-auto mx-auto max-w-5xl px-4 py-24 sm:px-6">
         <SectionTitle
           kicker="Proof, Not Promises"
           title="Stock vs Unity Tuned"
@@ -153,7 +147,7 @@ export default function HomePage() {
       </section>
 
       {/* power estimator — interactive customer tool */}
-      <section className="border-t border-white/10 bg-[#0d0d0f]">
+      <section className="cv-auto border-t border-white/10 bg-[#0d0d0f]">
         <div className="mx-auto max-w-5xl px-4 py-24 sm:px-6">
           <SectionTitle
             kicker="Try It Yourself"
@@ -167,26 +161,38 @@ export default function HomePage() {
       </section>
 
       {/* testimonials */}
-      <section className="border-y border-white/10 bg-[#0d0d0f] px-4 py-24 sm:px-6">
+      <section className="cv-auto border-y border-white/10 bg-[#0d0d0f] px-4 py-24 sm:px-6">
         <SectionTitle kicker="Word On The Street" title="Drivers Talk" />
         <TestimonialsSlider />
       </section>
 
       {/* builds gallery grid */}
-      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
+      <section className="cv-auto mx-auto max-w-7xl px-4 py-24 sm:px-6">
         <SectionTitle kicker="Recent Builds" title="From The Workshop" />
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          {BUILDS.slice(0, 8).map((b, i) => (
+          {builds.slice(0, 8).map((b, i) => (
             <Reveal key={b.id} delay={(i % 4) * 0.08}>
               <Link
                 href="/gallery"
                 className="group relative block aspect-square overflow-hidden rounded-lg border border-white/10"
               >
-                <div
-                  className="absolute inset-0 transition-transform duration-500 group-hover:scale-110"
-                  style={{ background: `radial-gradient(circle at 30% 25%, hsl(${b.hue} 55% 26%), #0c0c0e 75%)` }}
-                />
-                <CarSilhouette className="absolute inset-x-0 bottom-6 mx-auto w-3/4 text-white/85 transition-transform duration-500 group-hover:-translate-x-1 group-hover:scale-105" />
+                {b.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={b.image}
+                    alt={`${b.title} — ${b.car}`}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                ) : (
+                  <>
+                    <div
+                      className="absolute inset-0 transition-transform duration-500 group-hover:scale-110"
+                      style={{ background: `radial-gradient(circle at 30% 25%, hsl(${b.hue} 55% 26%), #0c0c0e 75%)` }}
+                    />
+                    <CarSilhouette className="absolute inset-x-0 bottom-6 mx-auto w-3/4 text-white/85 transition-transform duration-500 group-hover:-translate-x-1 group-hover:scale-105" />
+                  </>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-3.5">
                   <div className="display text-sm sm:text-base">{b.title}</div>

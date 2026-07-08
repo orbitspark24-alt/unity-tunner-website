@@ -3,7 +3,7 @@ import AboutContent from "./AboutContent";
 
 export const metadata: Metadata = {
   title: "About Us — The Crew Behind The Power",
-  description: "Unity Motorsports Performance: 10+ years, 1,200+ cars, one AWD dyno and a crew that tunes with data.",
+  description: "Unity Performance: 19+ years, 30,000+ vehicles optimized, and a crew that calibrates with data — Ranchi.",
 };
 
 export default function AboutPage() {
