@@ -19,6 +19,8 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%; /* stop iOS inflating text on rotate */
+  text-size-adjust: 100%;
 }
 
 body {
@@ -26,6 +28,14 @@ body {
   color: #fff;
   font-family: var(--font-body);
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent; /* no grey flash on tap */
+  overscroll-behavior-y: none; /* no rubber-band / pull-to-refresh bounce */
+}
+
+/* momentum scrolling for horizontal scrollers (carousels, wide tables) on iOS */
+.overflow-x-auto,
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
 }
 
 ::selection {

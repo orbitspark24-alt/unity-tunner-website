@@ -16,7 +16,7 @@ export default function Hero() {
   const { settings } = useSite();
   const { hero } = settings;
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <section className="relative flex min-h-screen min-h-[100svh] items-center justify-center overflow-hidden">
       {/*
         Background is intentionally static: scroll-transforming this layer
         (carbon texture + grid + SVG gauge + smoke) forced the GPU to
@@ -31,15 +31,15 @@ export default function Hero() {
           className="absolute bottom-0 left-1/2 h-72 w-[130%] -translate-x-1/2"
           style={{ background: "radial-gradient(ellipse 50% 100% at 50% 100%, rgba(225,6,0,0.14), transparent 70%)" }}
         />
-        {/* tachometer, faint, center */}
-        <div className="absolute left-1/2 top-1/2 w-[560px] max-w-[95vw] -translate-x-1/2 -translate-y-[58%] opacity-25">
+        {/* tachometer, faint, center — hidden on phones to save GPU/battery */}
+        <div className="absolute left-1/2 top-1/2 hidden w-[560px] max-w-[95vw] -translate-x-1/2 -translate-y-[58%] opacity-25 sm:block">
           <Tachometer className="w-full" />
         </div>
-        {/* drifting smoke */}
+        {/* drifting smoke — decorative, dropped on phones */}
         {SMOKE.map((s, i) => (
           <span
             key={i}
-            className="smoke"
+            className="smoke hidden sm:block"
             style={{
               left: s.left,
               bottom: s.bottom,
@@ -64,7 +64,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15 }}
-          className="display mb-4 inline-block rounded-full border border-[#e10600]/40 bg-[#e10600]/10 px-4 py-1.5 text-xs tracking-[0.3em] text-[#ff2a1f]"
+          className="display mb-4 inline-block max-w-[92vw] rounded-full border border-[#e10600]/40 bg-[#e10600]/10 px-4 py-1.5 text-[10px] tracking-[0.12em] text-[#ff2a1f] sm:text-xs sm:tracking-[0.3em]"
         >
           {hero.badge}
         </motion.div>
@@ -73,7 +73,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="display text-6xl leading-[0.9] sm:text-8xl lg:text-9xl"
+          className="display text-5xl leading-[0.95] sm:text-7xl md:text-8xl lg:text-9xl"
         >
           {hero.title1}
           <br />

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Rajdhani } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -39,6 +39,14 @@ export const metadata: Metadata = {
     description: "Bespoke ECU calibration that bridges stock performance and racing-grade efficiency.",
     images: ["/unity-performance-logo.jpeg"],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a", // matches the mobile browser chrome to the dark theme
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
+  // no maximumScale — pinch-to-zoom stays available for accessibility
 };
 
 const localBusinessSchema = {
