@@ -150,6 +150,7 @@ export async function getSettings(): Promise<SiteSettings> {
     stats: saved.stats?.length ? saved.stats : DEFAULT_SITE.stats,
     aboutStats: saved.aboutStats?.length ? saved.aboutStats : DEFAULT_SITE.aboutStats,
     testimonials: saved.testimonials?.length ? saved.testimonials : DEFAULT_SITE.testimonials,
+    faq: saved.faq?.length ? saved.faq : DEFAULT_SITE.faq,
     workshop: {
       ...DEFAULT_SITE.workshop,
       ...saved.workshop,

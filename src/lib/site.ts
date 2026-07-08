@@ -1,8 +1,9 @@
 /**
- * Site-wide editable content: hero copy, stats, testimonials and workshop
+ * Site-wide editable content: hero copy, stats, testimonials, FAQ and workshop
  * contact details. Defaults mirror what was previously hardcoded across the
  * components; the admin console edits a settings.json overlay via /admin/site.
  */
+import { SERVICE_FAQ } from "./services";
 
 export interface SiteStat {
   value: number;
@@ -20,6 +21,11 @@ export interface SiteTestimonial {
   hue: number;
 }
 
+export interface SiteFaq {
+  q: string;
+  a: string;
+}
+
 export interface SiteSettings {
   hero: {
     badge: string;
@@ -30,6 +36,7 @@ export interface SiteSettings {
   stats: SiteStat[]; // home stats bar
   aboutStats: SiteStat[]; // about page stats band
   testimonials: SiteTestimonial[];
+  faq: SiteFaq[];
   workshop: {
     address1: string;
     address2: string;
@@ -106,4 +113,5 @@ export const DEFAULT_SITE: SiteSettings = {
       { days: "Sunday", time: "By appointment" },
     ],
   },
+  faq: SERVICE_FAQ.map(([q, a]) => ({ q, a })),
 };

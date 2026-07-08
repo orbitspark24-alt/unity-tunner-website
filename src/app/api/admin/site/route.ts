@@ -18,6 +18,7 @@ export async function PUT(req: NextRequest) {
   body.stats = body.stats.filter((s) => s.label);
   body.aboutStats = (body.aboutStats ?? []).filter((s) => s.label);
   body.testimonials = (body.testimonials ?? []).filter((t) => t.name && t.text);
+  body.faq = (body.faq ?? []).filter((f) => f.q && f.a);
   body.workshop.hours = (body.workshop.hours ?? []).filter((h) => h.days && h.time);
   await saveSettings(body);
   return NextResponse.json(await getSettings());

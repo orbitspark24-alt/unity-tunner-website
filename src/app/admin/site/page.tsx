@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { Panel, Field, Spinner } from "@/components/admin/AdminUI";
 import { adminFetch } from "@/lib/adminClient";
 import { invalidateSite } from "@/lib/useSite";
-import type { SiteSettings, SiteStat, SiteTestimonial } from "@/lib/site";
+import type { SiteSettings, SiteStat, SiteTestimonial, SiteFaq } from "@/lib/site";
 import { IconX } from "@/components/Icons";
 
 const BLANK_STAT: SiteStat = { value: 0, prefix: "", suffix: "", decimals: 0, label: "" };
 const BLANK_TESTIMONIAL: SiteTestimonial = { name: "", car: "", text: "", rating: 5, hue: 0 };
+const BLANK_FAQ: SiteFaq = { q: "", a: "" };
 
 export default function SiteAdmin() {
   const [s, setS] = useState<SiteSettings | null>(null);
@@ -174,6 +175,36 @@ export default function SiteAdmin() {
               />
             </div>
           ))}
+        </div>
+      </Panel>
+
+      {/* FAQ */}
+      <Panel
+        title="FAQ (services page)"
+        action={<AddRow label="+ Add question" onClick={() => setS({ ...s, faq: [...s.faq, { ...BLANK_FAQ }] })} />}
+      >
+        <div className="space-y-4">
+          {s.faq.map((f, i) => (
+            <div key={i} className="rounded-lg border border-white/10 bg-[#0d0d0f] p-4">
+              <div className="mb-2 flex gap-2">
+                <input
+                  placeholder="Question"
+                  value={f.q}
+                  onChange={(e) => setS({ ...s, faq: s.faq.map((r, j) => (j === i ? { ...r, q: e.target.value } : r)) })}
+                  className="field text-sm font-semibold"
+                />
+                <RemoveRow onClick={() => setS({ ...s, faq: s.faq.filter((_, j) => j !== i) })} />
+              </div>
+              <textarea
+                rows={3}
+                placeholder="Answer"
+                value={f.a}
+                onChange={(e) => setS({ ...s, faq: s.faq.map((r, j) => (j === i ? { ...r, a: e.target.value } : r)) })}
+                className="field text-sm"
+              />
+            </div>
+          ))}
+          {s.faq.length === 0 && <p className="text-sm text-white/40">No questions yet — add one above.</p>}
         </div>
       </Panel>
 

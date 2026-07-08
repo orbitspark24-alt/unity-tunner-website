@@ -4,13 +4,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Reveal from "@/components/Reveal";
-import { STAGE_COMPARISON, SERVICE_FAQ } from "@/lib/services";
+import { STAGE_COMPARISON } from "@/lib/services";
 import { useSite } from "@/lib/useSite";
 import { SERVICE_ICONS, IconChevron } from "@/components/Icons";
 import { inr, cx } from "@/lib/utils";
 
 export default function ServicesContent() {
-  const { services: BOOKING_SERVICES } = useSite();
+  const { services: BOOKING_SERVICES, settings } = useSite();
+  const faq = settings.faq;
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
@@ -92,7 +93,7 @@ export default function ServicesContent() {
       <Reveal className="mx-auto mt-24 max-w-3xl">
         <h2 className="display mb-8 text-center text-4xl">Straight Answers</h2>
         <div className="space-y-3">
-          {SERVICE_FAQ.map(([q, a], i) => (
+          {faq.map(({ q, a }, i) => (
             <div key={q} className="overflow-hidden rounded-xl border border-white/10 bg-[#101012]">
               <button
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
